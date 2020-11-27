@@ -1,0 +1,541 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@inject BeTechTestwork.Services.CategoryService categoryService
+@inject BeTechTestwork.Services.WarehouseService warehouseService
+@inject BeTechTestwork.Services.CurrencyService currencyService
+@inject BeTechTestwork.Services.ProductService productService
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" />
+
+<div class="text-xs-center">
+    <h1>Currency courses</h1>
+    <table class="table table-fixed text-xs-center">
+        <thead>
+            <tr>
+                <th class="col-xs-3 text-xs-center">CurrencyName</th>
+                <th class="col-xs-3 text-xs-center">Code</th>
+                <th class="col-xs-3 text-xs-center">Course</th>
+                <th class="col-xs-3 text-xs-center">UpdateDate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in currencyService.GetList())
+            {
+                <tr>
+                    <td class="col-xs-3">@item.CurrencyName</td>
+                    <td class="col-xs-3">@item.Code</td>
+                    <td class="col-xs-3">@item.Course</td>
+                    <td class="col-xs-3">@item.UpdateDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" class="btn btn-outline-primary" onclick="GetCurrencyUAHFromNatBank()" value="UpdateCurrencies" />
+</div>
+
+<div class="text-xs-center mt-5">
+    <h1>Categories</h1>
+    <table class="table table-fixed">
+        <thead>
+            <tr>
+                <td class="col-xs-3"></td>
+                <td class="col-xs-2"></td>
+                <th class="col-xs-2 text-xs-center">CategoryName</th>
+                <td class="col-xs-2"></td>
+                <td class="col-xs-3"></td>
+            </tr>
+        </thead>
+        <tbody id="CategoriesList">
+            @foreach (var item in categoryService.GetList())
+            {
+                <tr>
+                    <td class="col-xs-3"></td>
+                    <td class="col-xs-2"></td>
+                    <td class="col-xs-2"><input type="checkbox" name="ProductCategories" /> @item.ProdCategory</td>
+                    <td class="col-xs-2"></td>
+                    <td class="col-xs-3"></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" class="btn btn-outline-primary" onclick="OpenFormAddCategoryProduct()" value="AddCategoryProduct" />
+    <input type="button" class="btn btn-outline-primary" onclick="DeleteCategoryProduct()" value="DeleteCategoryProduct" />
+    <input type="button" class="btn btn-outline-primary" onclick="UpdateCategoryProduct()" value="UpdateCategoryProduct" />
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" style="display:none" id="FormAddCategoryProduct">
+            <legend class="m-b-1 text-xs-center">Add ProductCategory</legend>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="CategoryName" type="text" placeholder="CategoryName" />
+                </span>
+            </div>
+            <div class="text-xs-center">
+                <input type="button" class="btn btn-outline-primary" onclick="AddCategory()" value="AddCategory" />
+            </div>
+        </form>
+    </div>
+    <form class="card card-block m-x-auto bg-faded form-width" id="UpdateCategory" style="display:none">
+        <h3>Change Category</h3>
+        <div class="form-group input-group">
+            <span class="has-float-label">
+                <input class="form-control" id="CategoryNameForUpdate" type="text" />
+            </span>
+        </div>
+        <div class="text-xs-center">
+            <input type="button" class="btn btn-outline-primary" onclick="UpdateCategory()" value="UpdateCategory" />
+        </div>
+    </form>
+
+</div>
+
+<div class="text-xs-center mt-5">
+    <h1>Products</h1>
+    <table class="table table-fixed fo">
+        <thead>
+            <tr>
+                <th class="col-xs-2 h6 text-xs-center">BarcodeNumber</th>
+                <th class="col-xs-2 h6 text-xs-center">Name</th>
+                <th class="col-xs-2 h6 text-xs-center">ProdCategory</th>
+                <th class="col-xs-2 h6 text-xs-center">BaseCurrencyPriceUsd</th>
+                <th class="col-xs-2 h6 text-xs-center">PriceUah</th>
+                <th class="col-xs-2 h6 text-xs-center">PriceEur</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in productService.GetList())
+            {
+                <tr>
+                    <td class="col-xs-2 h6"><input type="checkbox" name="productCheckbox">@item.BarcodeNumber</td>
+                    <td class="col-xs-2 h6">@item.Name</td>
+                    <td class="col-xs-2 h6">@item.ProdCategory</td>
+                    <td class="col-xs-2 h6">@item.BaseCurrencyPrice</td>
+                    <td class="col-xs-2 h6">@item.PriceUah</td>
+                    <td class="col-xs-2 h6">@item.PriceEur</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" class="btn btn-outline-primary" onclick="OpenFormAddProduct()" value="AddProduct" />
+    <input type="button" class="btn btn-outline-primary" onclick="DeleteProduct()" value="DeleteProduct" />
+    <input type="button" class="btn btn-outline-primary" onclick="UpdateProduct()" value="UpdateProduct" />
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" style="display:none" id="FormCreateProduct">
+            <legend class="m-b-1 text-xs-center">CreateProduct</legend>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="ProductName" type="text" placeholder="ProductName" />
+                </span>
+            </div>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="PriceInUSD" type="number" placeholder="PriceInUSD" />
+                </span>
+            </div>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="Currency" type="text" placeholder="Currency" value="Dollar" />
+                </span>
+            </div>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="Count" type="number" placeholder="Count" />
+                </span>
+            </div>
+            <div class="form-group has-float-label">
+                <select class="form-control custom-select" id="Category">
+                    @foreach (var item in categoryService.GetList())
+                    {
+                        <option id="@item.ProdCategory">@item.ProdCategory</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group has-float-label">
+                <select class="form-control custom-select" id="Warehouses">
+                    @foreach (var item in warehouseService.GetList())
+                    {
+                        <option id="@item.WarehouseName">@item.WarehouseName</option>
+                    }
+                </select>
+            </div>
+            <div class="text-xs-center">
+                <input type="button" class="btn btn-outline-primary" onclick="AddProduct()" value="AddProduct" />
+            </div>
+        </form>
+    </div>
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" id="UpdateProduct" style="display:none">
+            <legend class="m-b-1 text-xs-center">UpdateProduct</legend>
+            <div class="form-group input-group">
+                <div class="form-group input-group">
+                    <div class="row">
+                        <h6>Unchangeable product BarcodeNumber:</h6>
+                        <h6 id="unchangeableProductBarcodeNumber"></h6>
+                    </div>
+                </div>
+                <div class="form-group input-group">
+                    <div class="row">
+                        <h6>Unchangeable product base currency:</h6>
+                        <h6 id="BaseProductCurrency"></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <h6>Last value:</h6>
+                    <h6 id="LastProductName"></h6>
+                </div>
+                <span class="has-float-label">
+                    <input class="form-control" id="UpdateProductName" type="text" placeholder="NewProductName" />
+                </span>
+            </div>
+            <div class="form-group input-group">
+                <div class="row">
+                    <h6>Last value:</h6>
+                    <h6 id="LastPriceInUSD"></h6>
+                </div>
+                <span class="has-float-label">
+                    <input class="form-control" id="UpdatePriceInUSD" type="number" placeholder="NewPriceInUSD" />
+                </span>
+            </div>
+            <div class="form-group input-group">
+                <div class="row">
+                    <h6>Count in new warehouse:</h6>
+                </div>
+                <span class="has-float-label">
+                    <input class="form-control" id="CountInNewWarehouse" type="number" placeholder="CountInNewWarehouse" />
+                </span>
+            </div>
+            <div class="form-group has-float-label">
+                <h5>Change product category</h5>
+                <div class="row">
+                    <h6>Last value:</h6>
+                    <h6 id="LastProductCategory"></h6>
+                </div>
+                <select class="form-control custom-select" id="UpdateCategoryInProduct">
+                    @foreach (var item in categoryService.GetList())
+                    {
+                        <option id="@item.ProdCategory">@item.ProdCategory</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group has-float-label">
+                <h5>Add product in other warehouse</h5>
+                <div class="row">
+                    <h6>Last value:</h6>
+                    <h6 id="warehouseAlreadyFilledWithThisProduct"></h6>
+                </div>
+                <select class="form-control custom-select" id="UpdateWarehousesInProduct">
+                    @foreach (var item in warehouseService.GetList())
+                    {
+                        <option id="@item.WarehouseName">@item.WarehouseName</option>
+                    }
+                </select>
+            </div>
+            <div class="text-xs-center">
+                <input type="button" class="btn btn-outline-primary" onclick="UpdateSelectedProduct()" value="UpdateProduct" />
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    function AddCategory() {
+        var Category =
+        {
+            ProdCategory: document.getElementById("CategoryName").value
+        };
+        $.ajax({
+            url: `../../../api/WebApiCategory/Add`,
+            type: 'POST',
+            data: JSON.stringify(Category),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Category was added");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert("Wrong data");
+            }
+        });
+    }
+
+
+    var myData;
+    let arrayOfStrings;
+    function GetCurrencyUAHFromNatBank() {
+        var today = new Date();
+        var now = today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString();
+        $.ajax({
+            url: `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&date=${now}&txt`,
+            type: 'GET',
+            success: function (data) {
+                myData = data.activeElement.textContent.toString();
+                arrayOfStrings = myData.split('\n');
+                CreateCurrency(arrayOfStrings);
+            },
+            error: function (data) {
+                alert(data.responseText);
+            }
+        });
+    }
+
+    function CreateCurrency(arrayOfStrings) {
+        if (arrayOfStrings[5].trimStart(' ') == "USD")
+            var Currency =
+            {
+                CurrencyName: "Гривня",
+                Code: "UAH",
+                Course: parseFloat(arrayOfStrings[4].trimStart(' ')),
+                UpdateDate: arrayOfStrings[6].trimStart(' ')
+            };
+        $.ajax({
+            url: `../../../api/WebApiCurrency/Add`,
+            type: 'POST',
+            data: JSON.stringify(Currency),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                GetCurrencyEURFromNatBank();
+            },
+            error: function (data) {
+                alert(data.responseText);
+            }
+        });
+
+        function GetCurrencyEURFromNatBank() {
+            var today = new Date();
+            var now = today.getFullYear().toString() + (today.getMonth() + 1).toString() + today.getDate().toString();
+            $.ajax({
+                url: `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=EUR&date=${now}&txt`,
+                type: 'GET',
+                success: function (data) {
+                    myData = data.activeElement.textContent.toString();
+                    arrayOfStrings = myData.split('\n');
+                    CreateEurCourse(arrayOfStrings);
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+    }
+
+    function CreateEurCourse(arrayOfStrings) {
+        if (arrayOfStrings[5].trimStart(' ') != "USD")
+            var Currency =
+            {
+                CurrencyName: arrayOfStrings[3].trimStart(' '),
+                Code: arrayOfStrings[5].trimStart(' '),
+                Course: parseFloat(arrayOfStrings[4].trimStart(' ')),
+                UpdateDate: arrayOfStrings[6].trimStart(' ')
+            };
+
+        $.ajax({
+            url: `../../../api/WebApiCurrency/Add`,
+            type: 'POST',
+            data: JSON.stringify(Currency),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Currency was updated");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert(data.responseText);
+            }
+        });
+    }
+
+    function AddProduct() {
+        var propertyName = "Name";
+        var Product =
+        {
+            Name: document.getElementById("ProductName").value,
+            BaseCurrencyPrice: parseInt(document.getElementById("PriceInUSD").value),
+            Currency: document.getElementById("Currency").value,
+            ProdCategory: document.getElementById("Category").value,
+        };
+        var Warehouse = document.getElementById("Warehouses").value;
+        var count = parseInt(document.getElementById("Count").value);
+        $.ajax({
+            url: `../../../api/WebApiProduct/Add?warehouseNameFromwWarehouseProduct=${Warehouse}&countProductFromwWarehouseProduct=${count}&propertyName=${propertyName}`,
+            type: 'POST',
+            data: JSON.stringify(Product),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Product was added");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert("Wrong data");
+            }
+        });
+    }
+
+    function DeleteCategoryProduct() {
+        var id;
+        var propertyName = "Category";
+        var categoryCheckboxes = document.getElementsByName("ProductCategories");
+        for (var i = 0; i < categoryCheckboxes.length; i++) {
+            if (categoryCheckboxes[i].checked == true) {
+                var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                id = checkedCategoryForDelete.trimStart(' ');
+            }
+        }
+        $.ajax({
+            url: `../../../api/WebApiCategory/Delete?id=${id}&propertyName=${propertyName}`,
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Update Success");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert("Please select one cell from table");
+            }
+        });
+    }
+
+    function DeleteProduct() {
+        var id;
+        var propertyName = "ProdBarcodeNumber";
+        var categoryCheckboxes = document.getElementsByName("productCheckbox");
+        for (var i = 0; i < categoryCheckboxes.length; i++) {
+            if (categoryCheckboxes[i].checked == true) {
+                var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                id = checkedCategoryForDelete.trimStart(' ');
+            }
+        }
+        $.ajax({
+            url: `../../../api/WebApiProduct/Delete?id=${id}&propertyName=${propertyName}`,
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Update Success");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert("Please select one cell from table");
+            }
+        });
+    }
+
+    function UpdateCategoryProduct() {
+        var categoryCheckboxes = document.getElementsByName("ProductCategories");
+        for (var i = 0; i < categoryCheckboxes.length; i++) {
+            if (categoryCheckboxes[i].checked == true) {
+                var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                id = checkedCategoryForDelete.trimStart(' ');
+                var inputPlaceholder = document.getElementById("CategoryNameForUpdate");
+                var formCategoryChanges = document.getElementById("UpdateCategory");
+                inputPlaceholder.placeholder = id;
+                formCategoryChanges.style.display = "block";
+            }
+        }
+    }
+
+    function UpdateCategory() {
+        var categoryNameBeforeChange = document.getElementById("CategoryNameForUpdate").placeholder;
+        var Category =
+        {
+            ProdCategory: document.getElementById("CategoryNameForUpdate").value
+        };
+        $.ajax({
+            url: `../../../api/WebApiCategory/Update?categoryNameBeforeChange=${categoryNameBeforeChange}`,
+            type: 'POST',
+            data: JSON.stringify(Category),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Category was added");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert("Wrong data");
+            }
+        });
+    }
+
+    function UpdateProduct() {
+        var id;
+        var propertyName = "BarcodeNumber";
+        var unchangeableProductBarcodeNumber = document.getElementById("unchangeableProductBarcodeNumber");
+        var BaseProductCurrency = document.getElementById("BaseProductCurrency");
+        var productCheckboxes = document.getElementsByName("productCheckbox");
+        var LastProductName = document.getElementById("LastProductName");
+        var LastPriceInUSD = document.getElementById("LastPriceInUSD");
+        var LastProductCategory = document.getElementById("LastProductCategory");
+        var warehouseWithThisProduct = document.getElementById("warehouseAlreadyFilledWithThisProduct");
+        var formProductChanges = document.getElementById("UpdateProduct");
+        for (var i = 0; i < productCheckboxes.length; i++) {
+            if (productCheckboxes[i].checked == true) {
+                var checkedProductForUpdate = productCheckboxes[i].nextSibling.textContent;
+                id = checkedProductForUpdate.trimStart(' ');
+            }
+        }
+        $.ajax({
+            url: `../../../api/WebApiProduct/Get?id=${id}&propertyName=${propertyName}`,
+            type: 'Get',
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                console.log(data);
+                unchangeableProductBarcodeNumber.innerText = data.products.barcodeNumber;
+                LastProductName.innerText = data.products.name;
+                LastPriceInUSD.innerText = data.products.baseCurrencyPrice;
+                LastProductCategory.innerText = data.products.prodCategory;
+                BaseProductCurrency.innerText = data.products.currency;
+                if (data.warehouse != null) {
+                    warehouseWithThisProduct.innerText = data.warehouse;
+                }
+                else
+                warehouseWithThisProduct.innerText = "This product absent in warehouses ";
+                formProductChanges.style.display = "block";
+            },
+            error: function (data) {
+                alert("Please select one cell from table");
+            }
+        });
+    }
+
+    function UpdateSelectedProduct()
+    {
+        var Product =
+        {
+            BarcodeNumber: document.getElementById("unchangeableProductBarcodeNumber").innerHTML,
+            Name: document.getElementById("UpdateProductName").value,
+            BaseCurrencyPrice: parseInt(document.getElementById("UpdatePriceInUSD").value),
+            Currency: document.getElementById("BaseProductCurrency").innerHTML,
+            ProdCategory: document.getElementById("UpdateCategoryInProduct").value,
+        };
+        var Warehouse = document.getElementById("UpdateWarehousesInProduct").value;
+        var Count = parseInt(document.getElementById("CountInNewWarehouse").value)
+        $.ajax({
+            url: `../../../api/WebApiProduct/Update?Warehouse=${Warehouse}&Count=${Count}`,
+            type: 'POST',
+            data: JSON.stringify(Product),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("Product was added");
+                window.location.reload();
+            },
+            error: function (data) {
+                alert("Wrong data");
+            }
+        });
+    }
+
+    function OpenFormAddCategoryProduct()
+    {
+        if (document.getElementById("FormAddCategoryProduct").style.display == "none")
+        {
+            document.getElementById("FormAddCategoryProduct").style.display = "block";
+        }
+        else
+            document.getElementById("FormAddCategoryProduct").style.display = "none";
+
+    }
+
+    function OpenFormAddProduct() {
+        if (document.getElementById("FormCreateProduct").style.display == "none")
+        {
+            document.getElementById("FormCreateProduct").style.display = "block";
+        }
+        else
+            document.getElementById("FormCreateProduct").style.display = "none"
+    }
+</script>

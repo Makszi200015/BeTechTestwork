@@ -1,0 +1,384 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@inject BeTechTestwork.Services.WarehouseService warehouseService
+@inject BeTechTestwork.Services.ProductService productService
+@inject BeTechTestwork.Services.WarehouseProductService warehouseProductService
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/style.css" />
+
+<div class="text-xs-center">
+    <h1>Warehouses</h1>
+    <table class="table table-fixed mt-5">
+        <thead>
+            <tr>
+                <th class="col-xs-8 text-xs-center">WarehouseName</th>
+                <th class="col-xs-2 text-xs-center">Address</th>
+            </tr>
+        </thead>
+        <tbody style="height:auto">
+            @foreach (var item in warehouseService.GetList())
+            {
+                <tr>
+                    <td class="col-xs-8 text-xs-center"><input type="checkbox" name="warehouseCheckbox" />@item.WarehouseName</td>
+                    <td class="col-xs-2 text-xs-center">@item.Address</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" class="btn btn-outline-primary" onclick="OpenFormAddWarehouse()" value="AddWarehouse" />
+    <input type="button" class="btn btn-outline-primary" onclick="DeleteWarehouse()" value="DeleteWarehouse" />
+    <input type="button" class="btn btn-outline-primary" onclick="UpdateWarehouse()" value="UpdateWarehouse" />
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" style="display:none" id="FormAddWarehouse">
+            <legend class="m-b-1 text-xs-center">Add Warehouse</legend>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="WarehouseName" type="text" placeholder="WarehouseName" />
+                </span>
+            </div>
+            <div>
+                <span class="has-float-label">
+                    <input class="form-control" id="Adress" type="text" placeholder="Adress" />
+                </span>
+            </div>
+            <div class="text-xs-center mt-3">
+                <input type="button" class="btn btn-outline-primary" onclick="AddWarehouse()" value="AddWarehouse" />
+            </div>
+        </form>
+    </div>
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" style="display:none" id="UpdateWarehouse">
+            <legend class="m-b-1 text-xs-center">Update Warehouse</legend>
+            <div class="form-group input-group">
+                <div class="row">
+                    <h6>Unchangeable warehouseName:</h6>
+                    <h6 id="unchangeableWarehouseName"></h6>
+                </div>
+            </div>
+            <div>
+                <div class="row">
+                    <h6>Last value:</h6>
+                    <h6 id="LastAdress"></h6>
+                </div>
+                <span class="has-float-label">
+                    <input class="form-control" id="UpdateAdress" type="text" placeholder="NewAdress" />
+                </span>
+            </div>
+            <div class="text-xs-center mt-3">
+                <input type="button" class="btn btn-outline-primary" onclick="UpdateSelectWarehouse()" value="UpdateSelectWarehouse" />
+            </div>
+        </form>
+    </div>
+    <h1>Product in Warehouses</h1>
+    <table class="table table-fixed mt-5">
+        <thead>
+            <tr>
+                <th style="width: 33%;" class="col-xs-3 text-xs-center">#</th>
+                <th style="width: 33%;" class="col-xs-3 text-xs-center">WarehouseName</th>
+                <th class="col-xs text-xs-center">ProdBarcodeNumber</th>
+                <th class="col-xs-2 text-xs-center">Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in warehouseProductService.GetList())
+            {
+                <tr>
+                    <td style="width: 33%;" class="col-xs-3"><input type="checkbox" name="warehouseProductCheckbox" />@item.id</td>
+                    <td style="width: 33%;" class="col-xs-3">@item.WarehouseName</td>
+                    <td class="col-xs-2">@item.ProdBarcodeNumber</td>
+                    <td class="col-xs-2">@item.Count</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="button" class="btn btn-outline-primary" onclick="OpenFormAddProductInWarehouse()" value="AddProductInWarehouse" />
+    <input type="button" class="btn btn-outline-primary" onclick="DeleteProductInWarehouse()" value="DeleteProductInWarehouse" />
+    <input type="button" class="btn btn-outline-primary" onclick="UpdateProductInWarehouse()" value="UpdateProductInWarehouse" />
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" style="display:none" id="FormAddProductInWarehouse">
+            <legend class="m-b-1 text-xs-center">Add Product In Warehouse</legend>
+            <div class="form-group has-float-label">
+                <div class="form-group has-float-label">
+                    <select class="form-control custom-select" id="WarehousesNames">
+                        @foreach (var item in warehouseService.GetList())
+                        {
+                            <option id="@item.WarehouseName">@item.WarehouseName</option>
+                        }
+                    </select>
+                </div>
+                <select class="form-control custom-select" id="ProductName">
+                    @foreach (var item in productService.GetList())
+                    {
+                        <option id="@item.Name">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="Count" type="number" placeholder="Count" />
+                </span>
+            </div>
+            <div class="text-xs-center mt-3">
+                <input type="button" class="btn btn-outline-primary" onclick="AddProductInWarehouse()" value="AddProductInWarehouse" />
+            </div>
+        </form>
+    </div>
+
+    <div class="p-x-1 p-y-3">
+        <form class="card card-block m-x-auto bg-faded form-width" style="display:none" id="UpdateProductInWarehouse">
+            <legend class="m-b-1 text-xs-center">Add Product In Warehouse</legend>
+            <div class="form-group input-group">
+                <div class="row">
+                    <h6>Unchangeable id:</h6>
+                    <h6 id="unchangeableId"></h6>
+                </div>
+            </div>
+            <div class="form-group input-group">
+                <div class="row">
+                    <h6>Unchangeable warehouseName:</h6>
+                    <h6 id="unchangeableWarehouseNameById"></h6>
+                </div>
+            </div>
+            <div class="form-group input-group">
+                <div class="row">
+                    <h6>Unchangeable ProdBarcodeNumber:</h6>
+                    <h6 id="unchangeableProdBarcodeNumber"></h6>
+                </div>
+            </div>
+            <div>
+                <div class="row">
+                    <h6>Last value:</h6>
+                    <h6 id="LastCount"></h6>
+                </div>
+                <span class="has-float-label">
+                    <input class="form-control" id="NewCount" type="number" placeholder="NewCount" />
+                </span>
+            </div>
+            <div class="text-xs-center mt-3">
+                <input type="button" class="btn btn-outline-primary" onclick="UpdateCellInWarehouse()" value="UpdateProductInWarehouse" />
+            </div>
+        </form>
+    </div>
+</div>
+
+    <script>
+        function AddWarehouse() {
+            var Warehouse =
+            {
+                WarehouseName: document.getElementById("WarehouseName").value,
+                Address: document.getElementById("Adress").value
+            };
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/Add`,
+                type: 'POST',
+                data: JSON.stringify(Warehouse),
+                dataType: 'JSON',
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Warehouse was added");
+                    window.location.reload();
+                },
+                error: function () {
+                    alert("Wrong data");
+                }
+            });
+        }
+
+        function DeleteWarehouse() {
+            var id;
+            var propertyName = "WarehouseName";
+            var categoryCheckboxes = document.getElementsByName("warehouseCheckbox");
+            for (var i = 0; i < categoryCheckboxes.length; i++) {
+                if (categoryCheckboxes[i].checked == true) {
+                    var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                    id = checkedCategoryForDelete.trimStart(' ');
+                }
+            }
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/Delete?id=${id}&propertyName=${propertyName}`,
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Update Success");
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alert("Please select one cell from table");
+                }
+            });
+        }
+
+        function DeleteProductInWarehouse() {
+            var id;
+            var categoryCheckboxes = document.getElementsByName("warehouseProductCheckbox");
+            for (var i = 0; i < categoryCheckboxes.length; i++) {
+                if (categoryCheckboxes[i].checked == true) {
+                    var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                    id = checkedCategoryForDelete.trimStart(' ');
+                }
+            }
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/DeleteProductInWarehouse?id=${id}`,
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Update Success");
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alert("Please select one cell from table");
+                }
+            });
+        }
+
+        function AddProductInWarehouse() {
+            var WarehouseProduct =
+            {
+                WarehouseName: document.getElementById("WarehousesNames").value,
+                Count: parseInt(document.getElementById("Count").value)
+            };
+            console.log(WarehouseProduct);
+            var productName = document.getElementById("ProductName").value;
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/CreateProductInWarehouse?productName=${productName}`,
+                type: 'POST',
+                data: JSON.stringify(WarehouseProduct),
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Product was added in warehouse");
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alert("Wrong data");
+                }
+            });
+        }
+
+        function UpdateWarehouse() {
+            var id;
+            var formWarehouseChanges = document.getElementById("UpdateWarehouse");
+            var unchangeableWarehouseName = document.getElementById("unchangeableWarehouseName");
+            var categoryCheckboxes = document.getElementsByName("warehouseCheckbox");
+            var LastAdress = document.getElementById("LastAdress");
+            for (var i = 0; i < categoryCheckboxes.length; i++) {
+                if (categoryCheckboxes[i].checked == true) {
+                    var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                    id = checkedCategoryForDelete.trimStart(' ');
+                }
+            }
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/Get?id=${id}`,
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data);
+                    unchangeableWarehouseName.innerText = data.warehouseName;
+                    LastAdress.innerText = data.address;
+                    formWarehouseChanges.style.display = "block";
+                },
+                error: function (data) {
+                    alert("Please select one cell from table");
+                }
+            });
+        }
+
+        function UpdateSelectWarehouse()
+        {
+            var Warehouse =
+            {
+                WarehouseName: document.getElementById("unchangeableWarehouseName").innerText,
+                Address: document.getElementById("UpdateAdress").value
+            };
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/Update?`,
+                type: 'POST',
+                data: JSON.stringify(Warehouse),
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Product was added");
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alert("Wrong data");
+                }
+            });
+        }
+
+        function UpdateProductInWarehouse()
+        {
+            var id;
+            var unchangeableId = document.getElementById("unchangeableId");
+            var unchangeableWarehouseNameById = document.getElementById("unchangeableWarehouseNameById");
+            var unchangeableProdBarcodeNumber = document.getElementById("unchangeableProdBarcodeNumber");
+            var LastCount = document.getElementById("LastCount");
+            var UpdateProductInWarehouse = document.getElementById("UpdateProductInWarehouse");
+            var categoryCheckboxes = document.getElementsByName("warehouseProductCheckbox");
+            for (var i = 0; i < categoryCheckboxes.length; i++) {
+                if (categoryCheckboxes[i].checked == true) {
+                    var checkedCategoryForDelete = categoryCheckboxes[i].nextSibling.textContent;
+                    id = checkedCategoryForDelete.trimStart(' ');
+                }
+            }
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/GetProductInWarehouse?id=${id}`,
+                type: 'GET',
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data);
+                    unchangeableWarehouseNameById.innerText = data.warehouseName;
+                    unchangeableId.innerText = data.id;
+                    unchangeableProdBarcodeNumber.innerText = data.prodBarcodeNumber;
+                    LastCount.innerText = data.count;
+                    UpdateProductInWarehouse.style.display = "block";
+                },
+                error: function (data) {
+                    alert("Please select one cell from table");
+                }
+            });
+        }
+
+        function UpdateCellInWarehouse()
+        {
+            var WarehouseProduct =
+            {
+                id: document.getElementById("unchangeableId").innerText,
+                WarehouseName: document.getElementById("unchangeableWarehouseNameById").innerText,
+                ProdBarcodeNumber: document.getElementById("unchangeableProdBarcodeNumber").innerText,
+                Count: parseInt(document.getElementById("NewCount").value)
+            };
+            $.ajax({
+                url: `../../../api/WebApiWarehouse/UpdateProductInWarehouse`,
+                type: 'POST',
+                data: JSON.stringify(WarehouseProduct),
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Product was added");
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alert("Wrong data");
+                }
+            });
+        }
+
+        function OpenFormAddWarehouse() {
+            if (document.getElementById("FormAddWarehouse").style.display == "none") {
+                document.getElementById("FormAddWarehouse").style.display = "block";
+            }
+            else
+                document.getElementById("FormAddWarehouse").style.display = "none";
+
+        }
+
+        function OpenFormAddProductInWarehouse() {
+            if (document.getElementById("FormAddProductInWarehouse").style.display == "none") {
+                document.getElementById("FormAddProductInWarehouse").style.display = "block";
+            }
+            else
+                document.getElementById("FormAddProductInWarehouse").style.display = "none";
+
+        }
+
+    </script>
